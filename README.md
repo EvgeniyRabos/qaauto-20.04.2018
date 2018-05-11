@@ -12,7 +12,8 @@ type: "java -version" (If nothing displayed you need to add java PATCH(Described
 3. Create new project, select correct JDK version (You can add JDK folder manual if nothing displayed) 
 
  ####  installation features/issues:
-1. Download [geckodriver](https://github.com/mozilla/geckodriver/releases) unarchive and copy to ~/Windows/System32/  
+1. Download [geckodriver](https://github.com/mozilla/geckodriver/releases) unarchive 
+and copy to ~/Windows/System32/  
 2. JDK not found:
 
 * Press "Windows Key" + "R" at the same time to get command prompt. Then type sysdm.cpl, go to advanced and select Environmental Variables
