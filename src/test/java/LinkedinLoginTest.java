@@ -38,7 +38,7 @@ public class LinkedinLoginTest {
                 "Profile menu is not displayed after login");
 
 
-        //Fixme: use inheritance
+        //Fixme: use inheritance_
         Assert.assertEquals(linkedinLoginPage.getCurrentPageTitle(), "LinkedIn", "Home page title is wrong");
     }
 
