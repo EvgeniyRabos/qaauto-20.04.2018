@@ -1,13 +1,10 @@
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import static java.lang.Thread.sleep;
 
 public class LinkedinLoginTest {
 
@@ -24,78 +21,56 @@ public class LinkedinLoginTest {
         webDriver.close();
     }
 
-    @Test
-    public void successfulLinkedinLogin() {
+    @DataProvider
+    public Object[][] ValidDataProvider() {
+        return new Object[][]{
+                {"gethab@rambler.ru", "1q2w3e4r5t6y"},
+                //{"gethab@rambler.RU", "1q2w3e4r5t6y"}
+        };
+    }
 
+        @DataProvider
+        public Object[][] NegativeDataProvider() {
+            return new Object[][]{
+                    { "gethab@rambler", "1q2w3e4r5t6y" },
+                    { "gethab@rambler.ru", "1q2w3e4r5t" }
+            };
 
+    }
 
+    @Test(dataProvider = "ValidDataProvider")
+    public void successfulLoginTest(String userEmail,String userPassword) {
         LinkedinLoginPage linkedinLoginPage = new LinkedinLoginPage(webDriver);
-        Assert.assertEquals(linkedinLoginPage.getCurrentPageTitle(), "LinkedIn: Войти или зарегистрироваться", "Login page title is wrong");
+        Assert.assertTrue(linkedinLoginPage.isPageLoaded(),
+                "Login page is not loaded");
 
-        linkedinLoginPage.login("gethab@rambler.ru","1q2w3e4r5t6y");
-        LinkedinHomePage linkedinHomePagePage = new LinkedinHomePage (webDriver);
-        Assert.assertTrue(linkedinHomePagePage.isProfileMenuDisplayed(),
-                "Profile menu is not displayed after login");
+        linkedinLoginPage.login(userEmail, userPassword);
 
+        LinkedinHomePage linkedinHomePage = new LinkedinHomePage(webDriver);
 
-        //Fixme: use inheritance_
-        Assert.assertEquals(linkedinLoginPage.getCurrentPageTitle(), "LinkedIn", "Home page title is wrong");
+        Assert.assertEquals(linkedinHomePage.isPageLoaded(),
+                "Home page is not loaded");
+         
     }
 
     @Test
     public void verifyLoginWithEmptyUsernameAndPassword() {
         LinkedinLoginPage linkedinLoginPage = new LinkedinLoginPage(webDriver);
-        linkedinLoginPage.login("","");
-        Assert.assertTrue(linkedinLoginPage.isSingInButtonDisplayed(),
-                "Sing in button is missing");
+        linkedinLoginPage.login("", "");
+        Assert.assertTrue(linkedinLoginPage.isPageLoaded(), "Sing In button is missing");
     }
 
-    @Test
-    public void successfulLinkedinPassLogin() {
+    @Test(dataProvider = "NegativeDataProvider")
+     public void verifyLoginWithValidUsernameAndShortPassword(String userEmail, String userPassword) {
+        LinkedinLoginPage linkedinLoginPage = new LinkedinLoginPage(webDriver);
 
-        Assert.assertEquals(webDriver.getTitle(), "LinkedIn: Войти или зарегистрироваться", "Page title is wrong");
+        linkedinLoginPage.login(userEmail, userPassword);
+        LinkedinLoginSubmitPage linkedinLoginSubmitPage = new LinkedinLoginSubmitPage(webDriver);
 
-        WebElement userPasswordField = webDriver.findElement(By.xpath("//input[@id='login-password']"));
-        WebElement userEmailField = webDriver.findElement(By.xpath("//input[@id='login-email']"));
-        WebElement singInButton = webDriver.findElement(By.xpath("//*[@id='login-submit']"));
-
-        userEmailField.sendKeys("gethab@rambler.ru");
-        userPasswordField.sendKeys("1q2w3e4r5t6y");
-        singInButton.click();
-
-        Assert.assertEquals(webDriver.getTitle(), "LinkedIn", "Page title is wrong");
+        Assert.assertEquals(linkedinLoginSubmitPage.isPageLoaded(),
+                "При заполнении формы были допущены ошибки. Проверьте и исправьте отмеченные поля.",
+                "Error message text is wrong.");
     }
 
-    @Test
-    public void wrongLinkedinPassLoginWr() {
-
-        Assert.assertEquals(webDriver.getTitle(), "LinkedIn: Войти или зарегистрироваться", "Page title is wrong");
-
-        WebElement userEmailField = webDriver.findElement(By.xpath("//input[@id='login-email']"));
-        WebElement userPasswordField = webDriver.findElement(By.xpath("//input[@id='login-password']"));
-        WebElement singInButton = webDriver.findElement(By.xpath("//*[@id='login-submit']"));
-
-        userEmailField.sendKeys("gethab@rambler");
-        userPasswordField.sendKeys("1q2w3e4r5t6y");
-        singInButton.click();
-
-        Assert.assertEquals(webDriver.getTitle(), "LinkedIn", "Page title is wrong");
-    }
-
-    @Test
-    public void WrongLinkedinLoginPassWr() {
-
-        Assert.assertEquals(webDriver.getTitle(), "LinkedIn: Войти или зарегистрироваться", "Page title is wrong");
-
-        WebElement userEmailField = webDriver.findElement(By.xpath("//input[@id='login-email']"));
-        WebElement userPasswordField = webDriver.findElement(By.xpath("//input[@id='login-password']"));
-        WebElement singInButton = webDriver.findElement(By.xpath("//*[@id='login-submit']"));
-
-        userEmailField.sendKeys("gethab@rambler.ru");
-        userPasswordField.sendKeys("1q2w3e4r5t6");
-        singInButton.click();
-
-        Assert.assertEquals(webDriver.getTitle(), "LinkedIn", "Page title is wrong");
-    }
 }
 
